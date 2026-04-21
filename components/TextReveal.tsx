@@ -13,31 +13,32 @@ export default function TextReveal({ text, className, style, delay = 0 }: TextRe
 
   const container: Variants = {
     hidden: { opacity: 0 },
-    visible: (i = 1) => ({
+    visible: {
       opacity: 1,
-      transition: { staggerChildren: 0.03, delayChildren: delay * i },
-    }),
+      transition: { 
+        staggerChildren: 0.05, 
+        delayChildren: delay 
+      },
+    },
   }
 
   const child: Variants = {
     visible: {
       opacity: 1,
-      x: 0,
       y: 0,
+      x: 0,
       scale: 1,
-      filter: 'blur(0px)',
       transition: {
         type: 'spring',
-        damping: 12,
-        stiffness: 200,
+        damping: 15,
+        stiffness: 150,
       },
     },
     hidden: {
       opacity: 0,
-      x: 20, // Simplified for type safety if function causes issues
       y: 20,
-      scale: 2,
-      filter: 'blur(10px)',
+      x: 10,
+      scale: 1.1,
     },
   }
 
@@ -47,7 +48,7 @@ export default function TextReveal({ text, className, style, delay = 0 }: TextRe
       variants={container}
       initial="hidden"
       whileInView="visible"
-      viewport={{ once: true }}
+      viewport={{ once: true, amount: 0.2 }}
       className={className}
     >
       {words.map((word, wordIndex) => (
@@ -61,8 +62,7 @@ export default function TextReveal({ text, className, style, delay = 0 }: TextRe
               {char}
             </motion.span>
           ))}
-          {/* Add space back after the word unless it's the last word */}
-          {wordIndex !== words.length - 1 && <span>&nbsp;</span>}
+          {wordIndex !== words.length - 1 && <span style={{ display: 'inline-block' }}>&nbsp;</span>}
         </span>
       ))}
     </motion.span>

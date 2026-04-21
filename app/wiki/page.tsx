@@ -4,17 +4,28 @@ import { motion, useScroll, useMotionValueEvent, Variants } from 'framer-motion'
 import Link from 'next/link'
 
 export default function WikiPage() {
+  const [isOpen, setIsOpen] = useState(false);
   const [hidden, setHidden] = useState(false);
   const { scrollY } = useScroll();
 
   useMotionValueEvent(scrollY, "change", (latest) => {
     const previous = scrollY.getPrevious() ?? 0;
-    if (latest > previous && latest > 150) {
+    if (latest > previous && latest > 50) {
       setHidden(true);
     } else {
       setHidden(false);
     }
   });
+
+  const sections = [
+    { id: 'vision', label: '01 / VISIÓN', color: 'var(--accent-cyan)' },
+    { id: 'arquitectura', label: '02 / ARQUITECTURA', color: 'var(--accent-magenta)' },
+    { id: 'motor', label: '03 / MOTOR', color: 'var(--accent-gold)' },
+    { id: 'sistemas', label: '04 / SISTEMAS', color: 'var(--accent-cyan)' },
+    { id: 'roster', label: '05 / ROSTER', color: '#fff' },
+    { id: 'configuracion', label: '06 / LÓGICA', color: 'var(--accent-magenta)' },
+    { id: 'ranked', label: '07 / RANKED', color: 'var(--accent-gold)' },
+  ];
 
   const characters = [
     { name: 'Aegor', role: 'Vanguard (Control)', hp: 1000, atk: 90, def: 140, spd: 80, ctrl: 30, res: 40, skills: ['Golpe Pesado', 'Embate', 'Guardia Alta', 'Dominio del Campo'], image: '/characters/aegor.png' },
@@ -31,36 +42,135 @@ export default function WikiPage() {
 
   return (
     <div className="container" style={{ padding: '2rem 1rem', maxWidth: '900px', margin: '0 auto' }}>
-      {/* Smart Sticky Navbar */}
-      <motion.nav 
+      {/* Floating Tactical Trigger (Hamburger) */}
+      <motion.button
+        onClick={() => setIsOpen(true)}
         variants={{
-          visible: { y: 0, opacity: 1 },
-          hidden: { y: -100, opacity: 0 }
+          visible: { x: 0, opacity: 1 },
+          hidden: { x: 100, opacity: 0 }
         }}
         animate={hidden ? "hidden" : "visible"}
-        transition={{ duration: 0.35, ease: "easeInOut" }}
-        style={{ 
+        style={{
           position: 'fixed',
-          top: 0,
-          left: 0,
-          right: 0,
+          top: '1.5rem',
+          right: '1.5rem',
           zIndex: 1000,
-          padding: '1rem',
+          width: '50px',
+          height: '50px',
+          borderRadius: '4px',
           background: 'rgba(5, 5, 5, 0.8)',
           backdropFilter: 'blur(10px)',
-          borderBottom: '1px solid var(--border-color)',
+          border: '1px solid var(--accent-cyan)',
+          color: 'var(--accent-cyan)',
+          cursor: 'pointer',
           display: 'flex',
-          justifyContent: 'center'
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          gap: '4px',
+          boxShadow: '0 0 20px rgba(0, 243, 255, 0.1)'
         }}
       >
-        <div style={{ maxWidth: '900px', width: '100%', display: 'flex', justifyContent: 'flex-start' }}>
-          <Link href="/" className="btn btn-outline" style={{ padding: '0.5rem 1rem', fontSize: '0.75rem', border: '1px solid rgba(0, 243, 255, 0.3)' }}>
+        <div style={{ width: '20px', height: '2px', background: 'currentColor' }} />
+        <div style={{ width: '20px', height: '2px', background: 'currentColor' }} />
+        <div style={{ width: '20px', height: '2px', background: 'currentColor' }} />
+      </motion.button>
+
+      {/* Side Tactical Drawer */}
+      <motion.div
+        initial={false}
+        animate={isOpen ? "open" : "closed"}
+        variants={{
+          open: { x: 0 },
+          closed: { x: '100%' }
+        }}
+        transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+        style={{
+          position: 'fixed',
+          top: 0,
+          right: 0,
+          width: 'min(320px, 80vw)',
+          height: '100vh',
+          background: 'rgba(5, 5, 5, 0.95)',
+          backdropFilter: 'blur(20px)',
+          borderLeft: '1px solid rgba(255, 255, 255, 0.05)',
+          zIndex: 2000,
+          padding: '3rem 2rem',
+          display: 'flex',
+          flexDirection: 'column'
+        }}
+      >
+        <button 
+          onClick={() => setIsOpen(false)}
+          style={{ 
+            alignSelf: 'flex-end', 
+            background: 'none', 
+            border: 'none', 
+            color: 'var(--text-secondary)', 
+            fontSize: '1.5rem', 
+            cursor: 'pointer',
+            marginBottom: '3rem'
+          }}
+        >
+          &times;
+        </button>
+
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', flex: 1 }}>
+          <Link 
+            href="/" 
+            onClick={() => setIsOpen(false)}
+            className="btn btn-outline" 
+            style={{ marginBottom: '2rem', fontSize: '0.8rem', textAlign: 'center' }}
+          >
             &larr; VOLVER AL INICIO
           </Link>
-        </div>
-      </motion.nav>
 
-      <div style={{ paddingTop: '5rem' }}>
+          <span style={{ fontSize: '0.6rem', letterSpacing: '0.3em', color: 'var(--text-secondary)', marginBottom: '1rem' }}>
+            ÍNDICE TÁCTICO
+          </span>
+
+          {sections.map(section => (
+            <a 
+              key={section.id}
+              href={`#${section.id}`}
+              onClick={() => setIsOpen(false)}
+              style={{
+                fontSize: '0.9rem',
+                color: section.color,
+                textDecoration: 'none',
+                letterSpacing: '0.1em',
+                fontWeight: 'bold',
+                padding: '0.5rem 0',
+                borderBottom: '1px solid rgba(255,255,255,0.02)'
+              }}
+            >
+              {section.label}
+            </a>
+          ))}
+        </div>
+
+        <div style={{ fontSize: '0.6rem', color: 'rgba(255,255,255,0.2)', textAlign: 'center' }}>
+          PROTOCOLO STRINGE // V3.0
+        </div>
+      </motion.div>
+
+      {/* Overlay to close drawer */}
+      {isOpen && (
+        <motion.div 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          onClick={() => setIsOpen(false)}
+          style={{
+            position: 'fixed',
+            inset: 0,
+            background: 'rgba(0,0,0,0.5)',
+            zIndex: 1500,
+            backdropFilter: 'blur(4px)'
+          }}
+        />
+      )}
+
+      <div style={{ paddingTop: '2rem' }}>
         <header style={{ marginBottom: 'clamp(4rem, 10vh, 6rem)', borderBottom: '1px solid var(--border-color)', paddingBottom: '2rem' }}>
         <span style={{ color: 'var(--accent-cyan)', fontSize: '0.8rem', fontWeight: 'bold', letterSpacing: '0.4em' }}>
           PROTOCOLO // DOCUMENTO MAESTRO V3.0
@@ -274,6 +384,7 @@ export default function WikiPage() {
       >
         &uarr;
       </motion.button>
+      </div>
     </div>
   );
 }

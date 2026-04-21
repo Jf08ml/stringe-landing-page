@@ -1,8 +1,21 @@
 "use client"
-import { motion } from 'framer-motion'
+import { useState } from 'react'
+import { motion, useScroll, useMotionValueEvent, Variants } from 'framer-motion'
 import Link from 'next/link'
 
 export default function WikiPage() {
+  const [hidden, setHidden] = useState(false);
+  const { scrollY } = useScroll();
+
+  useMotionValueEvent(scrollY, "change", (latest) => {
+    const previous = scrollY.getPrevious() ?? 0;
+    if (latest > previous && latest > 150) {
+      setHidden(true);
+    } else {
+      setHidden(false);
+    }
+  });
+
   const characters = [
     { name: 'Aegor', role: 'Vanguard (Control)', hp: 1000, atk: 90, def: 140, spd: 80, ctrl: 30, res: 40, skills: ['Golpe Pesado', 'Embate', 'Guardia Alta', 'Dominio del Campo'], image: '/characters/aegor.png' },
     { name: 'Drakar', role: 'Vanguard (Ofensivo)', hp: 950, atk: 100, def: 120, spd: 85, ctrl: 25, res: 40, skills: ['Tajo Brutal', 'Fractura', 'Embestida', 'Grito de Guerra'], image: '/characters/drakar.png' },
@@ -18,13 +31,37 @@ export default function WikiPage() {
 
   return (
     <div className="container" style={{ padding: '2rem 1rem', maxWidth: '900px', margin: '0 auto' }}>
-      <nav style={{ marginBottom: '4rem' }}>
-        <Link href="/" className="btn btn-outline" style={{ padding: '0.6rem 1.2rem', fontSize: '0.8rem' }}>
-          &larr; VOLVER AL INICIO
-        </Link>
-      </nav>
+      {/* Smart Sticky Navbar */}
+      <motion.nav 
+        variants={{
+          visible: { y: 0, opacity: 1 },
+          hidden: { y: -100, opacity: 0 }
+        }}
+        animate={hidden ? "hidden" : "visible"}
+        transition={{ duration: 0.35, ease: "easeInOut" }}
+        style={{ 
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          zIndex: 1000,
+          padding: '1rem',
+          background: 'rgba(5, 5, 5, 0.8)',
+          backdropFilter: 'blur(10px)',
+          borderBottom: '1px solid var(--border-color)',
+          display: 'flex',
+          justifyContent: 'center'
+        }}
+      >
+        <div style={{ maxWidth: '900px', width: '100%', display: 'flex', justifyContent: 'flex-start' }}>
+          <Link href="/" className="btn btn-outline" style={{ padding: '0.5rem 1rem', fontSize: '0.75rem', border: '1px solid rgba(0, 243, 255, 0.3)' }}>
+            &larr; VOLVER AL INICIO
+          </Link>
+        </div>
+      </motion.nav>
 
-      <header style={{ marginBottom: 'clamp(4rem, 10vh, 6rem)', borderBottom: '1px solid var(--border-color)', paddingBottom: '2rem' }}>
+      <div style={{ paddingTop: '5rem' }}>
+        <header style={{ marginBottom: 'clamp(4rem, 10vh, 6rem)', borderBottom: '1px solid var(--border-color)', paddingBottom: '2rem' }}>
         <span style={{ color: 'var(--accent-cyan)', fontSize: '0.8rem', fontWeight: 'bold', letterSpacing: '0.4em' }}>
           PROTOCOLO // DOCUMENTO MAESTRO V3.0
         </span>

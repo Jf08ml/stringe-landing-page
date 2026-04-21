@@ -1,5 +1,5 @@
 "use client"
-import { motion } from 'framer-motion'
+import { motion, Variants } from 'framer-motion'
 
 interface TextRevealProps {
   text: string
@@ -11,7 +11,7 @@ interface TextRevealProps {
 export default function TextReveal({ text, className, style, delay = 0 }: TextRevealProps) {
   const words = text.split(' ')
 
-  const container = {
+  const container: Variants = {
     hidden: { opacity: 0 },
     visible: (i = 1) => ({
       opacity: 1,
@@ -19,7 +19,7 @@ export default function TextReveal({ text, className, style, delay = 0 }: TextRe
     }),
   }
 
-  const child = {
+  const child: Variants = {
     visible: {
       opacity: 1,
       x: 0,
@@ -34,8 +34,8 @@ export default function TextReveal({ text, className, style, delay = 0 }: TextRe
     },
     hidden: {
       opacity: 0,
-      x: () => Math.random() * 100 - 50,
-      y: () => Math.random() * 100 - 50,
+      x: 20, // Simplified for type safety if function causes issues
+      y: 20,
       scale: 2,
       filter: 'blur(10px)',
     },
